@@ -13,7 +13,7 @@
   --bg: #eef3ee; --surface: #ffffff; --ink: #17251c; --muted: #56665c; --line: #d3ddd5;
   --accent: #1d7a45; --accent-soft: #dcefe3; --accent-ink: #ffffff;
   --play: #f0b400; --play-soft: #fff4cf; --ok: #1d7a45; --danger: #b3261e;
-  --p0: #d9443a; --p1: #e7801f; --p2: #c49400; --p3: #2f9a49; --p4: #2484cf; --p5: #3c4fb5; --p6: #8648c0; --p7: #d9443a; --p8: #e7801f;
+  --p0: #d9443a; --p1: #e7801f; --p2: #c49400; --p3: #2f9a49; --p4: #2484cf; --p5: #3c4fb5; --p6: #8648c0; --p7: #d9443a;
   --font-display: "Jua", "Noto Sans KR", system-ui, sans-serif;
   --font-body: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --radius: 14px;
@@ -24,7 +24,7 @@
     --bg: #0e1611; --surface: #16221a; --ink: #e5eee7; --muted: #9db0a3; --line: #2a3b30;
     --accent: #48bf78; --accent-soft: #1d3a27; --accent-ink: #08170d;
     --play: #ffcc33; --play-soft: #3a3214; --ok: #48bf78; --danger: #ff8a80;
-    --p0: #ff6f63; --p1: #ffa04d; --p2: #e8bf2c; --p3: #55c46f; --p4: #4fb0f5; --p5: #8494ff; --p6: #b98af0; --p7: #ff6f63; --p8: #ffa04d;
+    --p0: #ff6f63; --p1: #ffa04d; --p2: #e8bf2c; --p3: #55c46f; --p4: #4fb0f5; --p5: #8494ff; --p6: #b98af0; --p7: #ff6f63;
     color-scheme: dark;
   }
 }
@@ -120,7 +120,7 @@ details.teacher .inner { display: grid; gap: 8px; padding-top: 8px; }
 
   <section class="card" aria-labelledby="h-score">
     <h2 id="h-score"><span class="step">2</span>가락 바꾸기</h2>
-    <p class="hint">음표를 위아래로 끌거나 ▲▼를 눌러 음을 바꿔요. 음표 순서는 그대로이고, 마지막 음은 <b>높은 레</b>로 정해져 있어요.</p>
+    <p class="hint">음표를 위아래로 끌거나 ▲▼를 눌러 음을 바꿔요. 음표 순서는 그대로이고, 마지막 음은 <b>솔</b>로 정해져 있어요.</p>
     <div class="score" id="score"></div>
     <div class="tools">
       <button class="btn" id="btn-sample" type="button">예시 가락으로</button>
@@ -184,17 +184,17 @@ details.teacher .inner { display: grid; gap: 8px; padding-top: 8px; }
   "use strict";
   // ▼ 선생님 설정: Canva 제출 페이지 주소를 따옴표 안에 넣으세요. 비워 두면 버튼이 숨겨져요.
   const CANVA_URL = "";
-  // ▼ 선생님 설정: 가사를 따옴표 안에 넣으세요. 띄어쓰기는 무시하고 한 글자씩 음표 13개(8분음표 12개 + 마지막 높은 레)에 붙어요.
-  const LYRICS = "세계에서제일가는스트라이커";
+  // ▼ 선생님 설정: 가사를 따옴표 안에 넣으세요. 띄어쓰기는 무시하고 한 글자씩 음표 13개(8분음표 12개 + 마지막 솔)에 붙어요.
+  const LYRICS = "";
   const TEMPO = 120; // 보통 빠르게
   const SYL = Array.from(LYRICS.replace(/\s+/g, "")).slice(0, 13);
 
-  const NAMES = ["도", "레", "미", "파", "솔", "라", "시", "도", "레"];
-  const FULL = ["도", "레", "미", "파", "솔", "라", "시", "높은 도", "높은 레"];
-  const FREQ = [261.63, 293.66, 329.63, 349.23, 392.0, 440.0, 493.88, 523.25, 587.33];
-  const PCOL = ["#d9443a", "#e7801f", "#c49400", "#2f9a49", "#2484cf", "#3c4fb5", "#8648c0", "#d9443a", "#e7801f"];
-  const SOL = 4, FINAL = 8, N = 12;
-  const SAMPLE = [5, 5, 5, 6, 7, 7, 6, 7, 8, 7, 6, 7];
+  const NAMES = ["도", "레", "미", "파", "솔", "라", "시", "도"];
+  const FULL = ["도", "레", "미", "파", "솔", "라", "시", "높은 도"];
+  const FREQ = [261.63, 293.66, 329.63, 349.23, 392.0, 440.0, 493.88, 523.25];
+  const PCOL = ["#d9443a", "#e7801f", "#c49400", "#2f9a49", "#2484cf", "#3c4fb5", "#8648c0", "#d9443a"];
+  const SOL = 4, N = 12;
+  const SAMPLE = [0, 0, 2, 2, 4, 4, 2, 2, 3, 3, 1, 1];
   const $ = (id) => document.getElementById(id);
   const store = {
     get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
@@ -203,7 +203,7 @@ details.teacher .inner { display: grid; gap: 8px; padding-top: 8px; }
 
   // ---------- state ----------
   const draft = store.get("sd-draft") || {};
-  const validMel = (m) => Array.isArray(m) && m.length === N && m.every(v => Number.isInteger(v) && v >= 0 && v <= 8);
+  const validMel = (m) => Array.isArray(m) && m.length === N && m.every(v => Number.isInteger(v) && v >= 0 && v <= 7);
   let melody = validMel(draft.melody) ? draft.melody.slice() : SAMPLE.slice();
   let undoStack = [];
   let timbre = ["piano", "xylo", "rec"].includes(draft.timbre) ? draft.timbre : "piano";
@@ -233,7 +233,7 @@ details.teacher .inner { display: grid; gap: 8px; padding-top: 8px; }
   function notePrims(bar, c, m) {
     const out = [];
     if (c.k === "r") { const x = c.cx; out.push({ t: "rest", x }); return out; }
-    const p = c.k === "q" ? FINAL : m[c.i];
+    const p = c.k === "q" ? SOL : m[c.i];
     const y = yOf(p), x = c.cx;
     if (p === 0) out.push({ t: "ledger", x, y: 100 });
     out.push({ t: "head", x, y, fixed: c.k === "q" });
@@ -291,7 +291,7 @@ details.teacher .inner { display: grid; gap: 8px; padding-top: 8px; }
           d.append(up, chip, dn); ne.chip = chip; ne.up = up; ne.dn = dn;
         } else if (c.k === "q") {
           const sp = document.createElement("div"); sp.style.height = "30px";
-          const chip = document.createElement("div"); chip.className = "chip"; chip.style.setProperty("--c", "var(--p8)"); chip.innerHTML = "<small>높은</small>레";
+          const chip = document.createElement("div"); chip.className = "chip"; chip.style.setProperty("--c", "var(--p4)"); chip.textContent = "솔";
           const lk = document.createElement("div"); lk.className = "lock"; lk.textContent = "고정";
           d.append(sp, chip, lk);
         } else {
@@ -305,7 +305,7 @@ details.teacher .inner { display: grid; gap: 8px; padding-top: 8px; }
       wrap.appendChild(ctrls); host.appendChild(wrap);
       let dragCol = null;
       const toLocal = (ev) => { const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); };
-      const pitchAt = (y) => Math.max(0, Math.min(8, Math.round((100 - y) / 6)));
+      const pitchAt = (y) => Math.max(0, Math.min(7, Math.round((100 - y) / 6)));
       svg.addEventListener("pointerdown", (ev) => {
         const p = toLocal(ev);
         const c = bar.cols.find(c => c.k === "e" && p.x >= c.x0 && p.x < c.x1);
@@ -336,15 +336,15 @@ details.teacher .inner { display: grid; gap: 8px; padding-top: 8px; }
     for (let i = 0; i < N; i++) {
       const ne = noteEls["e" + i]; const p = melody[i];
       ne.chip.style.setProperty("--c", `var(--p${p})`);
-      ne.chip.innerHTML = p >= 7 ? "<small>높은</small>" + NAMES[p] : NAMES[p];
-      ne.up.disabled = p >= 8; ne.dn.disabled = p <= 0;
+      ne.chip.innerHTML = p === 7 ? "<small>높은</small>도" : NAMES[p];
+      ne.up.disabled = p >= 7; ne.dn.disabled = p <= 0;
     }
   }
 
   function pushHistory() { undoStack.push(melody.slice()); if (undoStack.length > 50) undoStack.shift(); $("btn-undo").disabled = false; }
   function changed() { drawNotes(); saveDraft(); markDirty(); }
   function setPitch(i, p, preview, noHistory) {
-    p = Math.max(0, Math.min(8, p));
+    p = Math.max(0, Math.min(7, p));
     if (melody[i] === p) return;
     if (!noHistory) pushHistory();
     melody[i] = p; changed();
@@ -424,7 +424,7 @@ details.teacher .inner { display: grid; gap: 8px; padding-top: 8px; }
     if (o.count) for (let b = 0; b < 4; b++) stick(t0 + b * beat, b === 0);
     const start = t0 + (o.count ? 4 : 0) * beat;
     if (o.acc) ACC.forEach(b => tamb(start + b * beat, ACCENT.has(b)));
-    const seq = m.map((p, i) => ({ p, b: i * 0.5, d: 0.5, key: "e" + i })).concat([{ p: FINAL, b: 6, d: 1, key: "q" }, { p: null, b: 7, d: 1, key: "r" }]);
+    const seq = m.map((p, i) => ({ p, b: i * 0.5, d: 0.5, key: "e" + i })).concat([{ p: SOL, b: 6, d: 1, key: "q" }, { p: null, b: 7, d: 1, key: "r" }]);
     seq.forEach(ev => {
       if (o.mel && ev.p !== null) tone(ev.p, start + ev.b * beat, ev.d * beat, 0.32);
       if (onHi) {
@@ -458,7 +458,7 @@ details.teacher .inner { display: grid; gap: 8px; padding-top: 8px; }
     const parts = String(line).trim().split("|");
     if (parts.length < 5 || parts[0].trim().toUpperCase() !== "SD") return null;
     const digits = parts[4].trim();
-    if (!/^[1-9]{12}$/.test(digits)) return null;
+    if (!/^[1-8]{12}$/.test(digits)) return null;
     return { name: parts[3].trim(), melody: digits.split("").map(d => +d - 1) };
   }
 
@@ -531,7 +531,7 @@ details.teacher .inner { display: grid; gap: 8px; padding-top: 8px; }
         const cx = PAD + c.cx * sc;
         let label, col;
         if (c.k === "e") { const p = melody[c.i]; label = FULL[p]; col = PCOL[p]; }
-        else if (c.k === "q") { label = FULL[FINAL]; col = PCOL[FINAL]; }
+        else if (c.k === "q") { label = "솔"; col = PCOL[4]; }
         else { label = "쉼"; col = null; }
         g.textAlign = "center"; g.textBaseline = "middle";
         g.fillStyle = col ? "#17251c" : "#56665c";
@@ -597,7 +597,7 @@ details.teacher .inner { display: grid; gap: 8px; padding-top: 8px; }
     if (playing && playingOwner === tState) { stopAll(); return; }
     const p = parseCode($("t-code").value);
     if (!p) { setStatus("t-status", "코드를 읽지 못했어요. SD|반|번호|이름|숫자 12개 모양인지 확인해 주세요.", "err"); return; }
-    setStatus("t-status", p.name + " · " + p.melody.map(v => FULL[v]).join(" ") + " | " + FULL[FINAL]);
+    setStatus("t-status", p.name + " · " + p.melody.map(v => FULL[v]).join(" ") + " | 솔");
     play(p.melody, { tempo: TEMPO, mel: true, acc: true, count: true }, tState, null);
   });
 
